@@ -26,13 +26,14 @@ export default function EditarEmpleado() {
   }
 
   const onInputChange = (e) => {
+    //spread operator ... (Expandir los atributos)
     setEmpleado({ ...empleado, [e.target.name]: e.target.value });
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(urlBase, empleado);
+      await axios.put(`${urlBase}/${id}`, empleado);
       navegacion('/');
     } catch (error) {
       console.error("Error al agregar empleado:", error);
