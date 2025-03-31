@@ -1,9 +1,13 @@
 import axios from 'axios';
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
-export default function AgregarEmpleado() {
+export default function EditarEmpleado() {
+  
+  const urlBase = "http://localhost:8080/rh-app/empleados";
+
   let navegacion = useNavigate();
+  const {id} = useParams();
   const [empleado, setEmpleado] = useState({
     nombre: "",
     departamento: "",
@@ -12,15 +16,24 @@ export default function AgregarEmpleado() {
 
   const { nombre, departamento, sueldo } = empleado;
 
+  useEffect(() => {
+    cargarEmpleado();
+  },[]);
+
+  const cargarEmpleado = async () => {
+    const resultado = await axios.get(`${urlBase}/${id}`);
+    setEmpleado(resultado.data);
+  }
+
   const onInputChange = (e) => {
+    //spread operator ... (Expandir los atributos)
     setEmpleado({ ...empleado, [e.target.name]: e.target.value });
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const urlBase = "http://localhost:8080/rh-app/empleados";
-      await axios.post(urlBase, empleado);
+      await axios.put(`${urlBase}/${id}`, empleado);
       navegacion('/');
     } catch (error) {
       console.error("Error al agregar empleado:", error);
@@ -30,7 +43,7 @@ export default function AgregarEmpleado() {
   return (
     <div className="container">
       <div className="container text-center" style={{ margin: "30px" }}>
-        <h3>Agregar Empleado</h3>
+        <h3>Editar Empleado</h3>
       </div>
       <form onSubmit={onSubmit}>
         <div className="mb-3">
@@ -46,7 +59,7 @@ export default function AgregarEmpleado() {
           <input type="number" className="form-control" style={{background:"#E0FFFF"}} id="sueldo" name="sueldo" required value={sueldo} onChange={onInputChange} />
         </div>
         <div className="text-center">
-          <button type="submit" className="btn btn-primary btn-sm me-3">Agregar</button>
+          <button type="submit" className="btn btn-sm me-3" style={{background:'blue', color:'white'}}>Guardar</button>
           <Link to="/" className="btn btn-sm" style={{ background: 'green', color: 'white' }}>Regresar</Link>
         </div>
       </form>
